@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mis compras - MotoStore</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <style>
+        body {
+            background: #0f172a;
+            color: #e5e7eb;
+            min-height: 100vh;
+        }
+        .card {
+            border-radius: 1rem;
+            border: none;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.6);
+        }
+        .table thead {
+            background: #020617;
+            color: #e5e7eb;
+        }
+        .table tbody tr {
+            background: #020617;
+        }
+        .table tbody tr:hover {
+            background: #111827;
+        }
+        .badge-pill {
+            border-radius: 999px;
+        }
+        a, a:hover { text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-black border-bottom border-secondary">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand" th:href="@{/catalog}">
+            🏍️ MotoStore <small class="text-secondary">Cliente</small>
+        </a>
+        <div class="d-flex">
+            <a class="btn btn-outline-light btn-sm me-2" th:href="@{/catalog}">
+                Volver al catálogo
+            </a>
+            <a class="btn btn-outline-danger btn-sm" th:href="@{/logout}">
+                Cerrar sesión
+            </a>
+        </div>
+    </div>
+</nav>
+
+<main class="container py-4 py-lg-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 text-white mb-1">Mis compras</h1>
+            <p class="text-secondary mb-0">
+                Historial de motos compradas, método de pago y acceso a factura.
+            </p>
+        </div>
+        <span class="badge bg-primary badge-pill"
+              th:text="${#lists.size(sales)} + ' compras registradas'">
+            0 compras registradas
+        </span>
+    </div>
+
+    <div class="card bg-dark">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Método de pago</th>
+                        <th>Motos</th>
+                        <th class="text-center">Factura</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${#lists.isEmpty(sales)}">
+                        <td colspan="6" class="text-center text-secondary py-4">
+                            Aún no has realizado compras.
+                        </td>
+                    </tr>
+                    <tr th:each="s : ${sales}">
+                        <td th:text="${s.id}">1</td>
+                        <td th:text="${#temporals.format(s.saleDate, 'yyyy-MM-dd HH:mm')}">
+                            2025-11-22 10:00
+                        </td>
+                        <td th:text="${#numbers.formatDecimal(s.total, 0, 'POINT', 0, 'COMMA')}">
+                            25.000.000
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary badge-pill"
+                                  th:text="${s.paymentMethod}">CASH</span>
+                        </td>
+                        <td>
+                            <ul class="mb-0 small">
+                                <li th:each="item : ${s.items}">
+                                    <span th:text="${item.moto.brand}">Suzuki</span>
+                                    <span th:text="${item.moto.model}">GSX-R150</span>
+                                    (x<span th:text="${item.quantity}">1</span>)
+                                </li>
+                            </ul>
+                        </td>
+                        <td class="text-center">
+                            <a th:if="${s.invoicePdfPath != null}"
+                               th:href="@{'/api/sales/' + ${s.id} + '/invoice'}"
+                               class="btn btn-sm btn-outline-light">
+                                PDF
+                            </a>
+                            <span th:if="${s.invoicePdfPath == null}" class="text-secondary small">
+                                No disponible
+                            </span>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+</body>
+</html>

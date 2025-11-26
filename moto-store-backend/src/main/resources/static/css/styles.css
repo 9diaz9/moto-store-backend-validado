@@ -1,0 +1,35 @@
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Tarjetas de login/registro/verificación */
+.auth-card {
+    max-width: 420px;
+    width: 100%;
+    border-radius: 1rem;
+}
+
+/* Hero card en el home */
+.hero-card {
+    border-radius: 1.5rem;
+}
+
+/* Quitamos subrayado feo en links dentro de nav */
+.navbar a {
+    text-decoration: none;
+}
+
+/* Tabla del catálogo */
+.table thead th {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.table tbody td {
+    font-size: 0.92rem;
+}
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+    cursor: pointer;
+}

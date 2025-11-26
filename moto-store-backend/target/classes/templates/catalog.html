@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MotoStore Suzuki - Catálogo</title>
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          crossorigin="anonymous">
+
+    <style>
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at top, #1f2937 0, #020617 55%, #000 100%);
+            color: #e5e7eb;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand span {
+            font-weight: 700;
+            letter-spacing: .04em;
+        }
+
+        .brand-accent { color: #38bdf8; }
+        .page-title { font-size: 2.2rem; font-weight: 800; letter-spacing: .05em; }
+        .subtitle { color: #9ca3af; }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.15rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .chip-primary {
+            background: rgba(56, 189, 248, 0.1);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.5);
+        }
+
+        .chip-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.5);
+        }
+
+        .moto-card {
+            border: 1px solid rgba(148,163,184,0.2);
+            border-radius: 1.25rem;
+            background: rgba(15,23,42,0.95);
+            box-shadow: 0 18px 45px rgba(0,0,0,0.4);
+            transition: .25s ease;
+            overflow: hidden;
+        }
+
+        .moto-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(56,189,248,0.8);
+            box-shadow: 0 26px 60px rgba(0,0,0,0.7);
+        }
+
+        .moto-header { padding: 1rem 1rem 0.2rem 1rem; }
+        .moto-title { font-size: 1.2rem; font-weight: 700; text-transform: uppercase; }
+        .moto-brand  { font-size: 0.8rem; text-transform: uppercase; color: #9ca3af; }
+
+        .moto-price { font-size: 1.3rem; font-weight: 700; }
+        .badge-stock { background: rgba(22,163,74,.16); color: #4ade80; }
+        .badge-no-stock { background: rgba(220,38,38,.18); color: #fecaca; }
+        .card-footer-custom { border-top: 1px solid rgba(55,65,81,0.8); background:#111827; }
+
+        /* ========== GALERÍA MEJORADA (como tienda real) ========== */
+
+        .moto-gallery {
+            max-width: 330px; /* evita imagen gigante */
+            margin: 0 auto;
+        }
+
+        .moto-gallery-main {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            background: #0f172a;
+            aspect-ratio: 4 / 3; /* proporción limpia */
+        }
+
+        .moto-main-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .35s ease;
+        }
+
+        /* Zoom al pasar */
+        .moto-gallery-main:hover .moto-main-img { transform: scale(1.05); }
+
+        /* Flechas */
+        .gallery-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.45);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-prev { left: 10px; }
+        .gallery-next { right: 10px; }
+
+        /* Miniaturas */
+        .moto-gallery-thumbs img {
+            width: 60px;
+            height: 60px;
+            border-radius: .5rem;
+            object-fit: cover;
+            cursor: pointer;
+            opacity: .7;
+            border: 2px solid transparent;
+            transition: .25s;
+        }
+
+        .moto-gallery-thumbs img:hover {
+            opacity: 1;
+            transform: scale(1.06);
+        }
+
+        .moto-gallery-thumbs img.active {
+            opacity: 1;
+            border-color: #3b82f6;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark sticky-top border-bottom border-secondary border-opacity-50">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/catalog}">
+            <span class="me-2">🏍️</span>
+            <span>MotoStore <span class="brand-accent">Suzuki</span></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item me-lg-3"><a class="nav-link active" th:href="@{/catalog}">Catálogo</a></li>
+                <li class="nav-item me-lg-3"><a class="nav-link" th:href="@{/cart}">Carrito</a></li>
+                <li class="nav-item"><a class="btn btn-outline-danger btn-sm px-3" th:href="@{/logout}">Cerrar sesión</a></li>
+                <li class="nav-item me-lg-3" th:if="${#authentication.authenticated}">
+                <a class="nav-link" th:href="@{/mis-compras}">Mis compras</a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- CONTENIDO -->
+<main class="container py-4 py-md-5">
+
+    <!-- LISTADO -->
+    <div th:unless="${#lists.isEmpty(motos)}" class="row g-4">
+
+        <div class="col-md-6 col-lg-4" th:each="moto : ${motos}">
+            <div class="moto-card h-100 d-flex flex-column">
+
+                <!-- CABECERA -->
+                <div class="moto-header">
+                    <div class="moto-brand" th:text="${moto.brand}">SUZUKI</div>
+                    <div class="moto-title" th:text="${moto.name}">GIXXER 250</div>
+                </div>
+
+                <!-- GALERÍA -->
+                <div class="px-3" th:if="${moto.imageKey != null}">
+                    <div class="moto-gallery" th:attr="data-base=${moto.imageKey}">
+                        <div class="moto-gallery-main">
+                            <img class="moto-main-img"
+                                 th:src="@{'/img/motos/' + ${moto.imageKey} + '-1.jpg'}">
+                            <button class="gallery-control gallery-prev">&lsaquo;</button>
+                            <button class="gallery-control gallery-next">&rsaquo;</button>
+                        </div>
+
+                        <div class="moto-gallery-thumbs d-flex gap-2 justify-content-center mt-2">
+                            <img class="moto-thumb active" data-index="0"
+                                 th:src="@{'/img/motos/' + ${moto.imageKey} + '-1.jpg'}">
+
+                            <img class="moto-thumb" data-index="1"
+                                 th:src="@{'/img/motos/' + ${moto.imageKey} + '-2.jpg'}">
+
+                            <img class="moto-thumb" data-index="2"
+                                 th:src="@{'/img/motos/' + ${moto.imageKey} + '-3.jpg'}">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CUERPO -->
+                <div class="px-3 pt-3 pb-2">
+                    <div class="d-flex justify-content-between moto-specs mb-2">
+                        <span><span th:text="${moto.engineCc}"></span> cc</span>
+
+                        <span th:if="${moto.stock > 0}" class="badge badge-stock">
+                            <span th:text="${moto.stock}"></span> en stock
+                        </span>
+
+                        <span th:if="${moto.stock == 0}" class="badge badge-no-stock">Sin stock</span>
+                    </div>
+
+                    <p class="small text-secondary mb-2"
+                       th:text="${moto.description} ?: 'Moto Suzuki de alto rendimiento.'">
+                    </p>
+
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="text-uppercase small text-secondary">Precio</div>
+                            <div class="moto-price"
+                                 th:text="|$${#numbers.formatDecimal(moto.price,0,'POINT',0,'COMMA')}|"></div>
+                        </div>
+
+                        <div class="small text-secondary" th:text="${moto.year}"></div>
+                    </div>
+                </div>
+
+                <!-- FOOTER -->
+                <div class="card-footer-custom mt-auto px-3 py-3">
+                    <form th:action="@{/cart/add}" method="post" class="d-flex gap-2 align-items-center">
+                        <input type="hidden" name="motoId" th:value="${moto.id}">
+                        <input class="form-control form-control-sm qty-input"
+                               type="number" name="quantity" min="1" value="1"
+                               th:attr="max=${moto.stock}" th:disabled="${moto.stock == 0}">
+                        <button class="btn btn-sm btn-primary ms-auto"
+                                th:disabled="${moto.stock == 0}">
+                            Agregar al carrito
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</main>
+
+<!-- SCRIPT CARRUSEL -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".moto-gallery").forEach(gallery => {
+
+            const base = gallery.dataset.base;
+            const mainImg = gallery.querySelector(".moto-main-img");
+            const thumbs = [...gallery.querySelectorAll(".moto-thumb")];
+
+            let index = 0;
+
+            const update = () => {
+                mainImg.src = `/img/motos/${base}-${index + 1}.jpg`;
+                thumbs.forEach(t => t.classList.remove("active"));
+                thumbs[index].classList.add("active");
+            };
+
+            thumbs.forEach((thumb, i) => {
+                thumb.addEventListener("click", () => {
+                    index = i;
+                    update();
+                });
+            });
+
+            gallery.querySelector(".gallery-prev").onclick = () => {
+                index = index === 0 ? thumbs.length - 1 : index - 1;
+                update();
+            };
+
+            gallery.querySelector(".gallery-next").onclick = () => {
+                index = index === thumbs.length - 1 ? 0 : index + 1;
+                update();
+            };
+
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>MotoStore Suzuki - Tu tienda de motos online</title>
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          crossorigin="anonymous">
+    <!-- Si tienes CSS propio, puedes añadirlo también -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}"/>
+
+    <style>
+        body {
+            background: radial-gradient(circle at top, #1e293b, #020617);
+            color: #e5e7eb;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand span {
+            font-weight: 700;
+        }
+
+        .navbar-nav .nav-link {
+            color: #e5e7eb;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #38bdf8;
+        }
+
+        .hero {
+            padding: 5rem 0 3rem;
+        }
+
+        .hero-title {
+            font-size: clamp(2.4rem, 4vw, 3.2rem);
+            font-weight: 800;
+        }
+
+        .hero-title span {
+            background: linear-gradient(90deg, #38bdf8, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            color: #9ca3af;
+            max-width: 520px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #2563eb, #22c55e);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #1d4ed8, #16a34a);
+        }
+
+        .btn-outline-light {
+            border-color: #4b5563;
+            color: #e5e7eb;
+        }
+
+        .btn-outline-light:hover {
+            background: #e5e7eb;
+            color: #020617;
+        }
+
+        .hero-badge {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 999px;
+            padding: .35rem .9rem;
+            font-size: .78rem;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            border: 1px solid #38bdf8;
+            color: #e5e7eb;
+        }
+
+        .hero-img-wrapper {
+            position: relative;
+        }
+
+        /* Imagen principal del hero */
+        .hero-main-img {
+            border-radius: 1.5rem;
+            box-shadow: 0 30px 80px rgba(15, 23, 42, .9);
+            border: 2px solid rgba(148, 163, 184, .3);
+            object-fit: cover;
+            width: 100%;
+            max-height: 360px;
+        }
+
+        .hero-floating-card {
+            position: absolute;
+            bottom: -1rem;
+            left: 8%;
+            transform: translateY(50%);
+            background: rgba(15, 23, 42, 0.96);
+            border-radius: 1rem;
+            padding: .9rem 1.2rem;
+            box-shadow: 0 10px 40px rgba(15, 23, 42, .9);
+            border: 1px solid #22c55e;
+            font-size: .85rem;
+        }
+
+        .hero-floating-card span {
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            color: #9ca3af;
+        }
+
+        .section-heading {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        /* CARDS DE MODELOS DESTACADOS */
+        .card {
+            border-radius: 1.1rem;
+            border: none;
+            background: #020617;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+            overflow: hidden;
+            transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+            border: 1px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 24px 60px rgba(15, 23, 42, 1);
+            border-color: rgba(56,189,248,0.7);
+        }
+
+        .card-img-top {
+            position: relative;
+            height: 190px;
+            overflow: hidden;
+        }
+
+        .card-img-top img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .35s ease;
+        }
+
+        .card:hover .card-img-top img {
+            transform: scale(1.05);
+        }
+
+        .card-img-overlay-gradient {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(15,23,42,0.9), transparent);
+        }
+
+        .badge-pill {
+            border-radius: 999px;
+        }
+
+        .stat-pill {
+            background: rgba(15, 23, 42, .9);
+            border-radius: 1rem;
+            padding: .75rem 1.1rem;
+            border: 1px solid rgba(148, 163, 184, .3);
+        }
+
+        footer {
+            border-top: 1px solid rgba(55, 65, 81, .7);
+        }
+
+        a, a:hover {
+            text-decoration: none;
+        }
+
+        @media (max-width: 991.98px) {
+            .hero {
+                padding-top: 3.5rem;
+            }
+            .hero-main-img {
+                max-height: 280px;
+            }
+            .hero-floating-card {
+                left: 6%;
+                right: 6%;
+                font-size: .8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" th:href="@{/}">
+            <span class="me-2">🏍️</span>
+            <span>MotoStore <small class="text-secondary">Suzuki</small></span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#mainNavbar" aria-controls="mainNavbar"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                <li class="nav-item me-lg-3">
+                    <a class="nav-link" th:href="@{/motos}">Catálogo</a>
+                </li>
+                <li class="nav-item me-lg-3">
+                    <a class="nav-link" th:href="@{/admin/dashboard}">Admin</a>
+                </li>
+                <li class="nav-item me-lg-3">
+                    <a class="nav-link" th:href="@{/login}">Iniciar sesión</a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/register}" class="btn btn-primary btn-sm">
+                        Crear cuenta
+                    </a>
+                </li>
+                <li class="nav-item me-lg-3" th:if="${#authentication.authenticated}">
+                <a class="nav-link" th:href="@{/mis-compras}">Mis compras</a>
+                </li>
+
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<main class="hero">
+    <div class="container pt-5">
+
+        <!-- HERO -->
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="mb-3">
+                    <span class="hero-badge">
+                        Suzuki only • Catálogo 100% especializado
+                    </span>
+                </div>
+                <h1 class="hero-title mb-3">
+                    Tu próxima <span>Suzuki</span> está a un clic.
+                </h1>
+                <p class="hero-subtitle mb-4">
+                    Explora nuestro catálogo de motos Suzuki: deportivas, naked y touring.
+                    Compra online, recibe tu factura en PDF y lleva el control de tus compras desde tu cuenta.
+                </p>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <a th:href="@{/motos}" class="btn btn-primary btn-lg">
+                        Ver catálogo de motos
+                    </a>
+                    <a th:href="@{/register}" class="btn btn-outline-light btn-lg">
+                        Crear cuenta
+                    </a>
+                </div>
+                <div class="d-flex flex-wrap gap-3 mt-3">
+                    <div class="stat-pill">
+                        <div class="small text-secondary">Modelos Suzuki</div>
+                        <div class="fw-bold">GSX • Gixxer • V-Strom</div>
+                    </div>
+                    <div class="stat-pill">
+                        <div class="small text-secondary">Compra segura</div>
+                        <div class="fw-bold">Factura PDF + historial</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 hero-img-wrapper">
+                <!-- Imagen local del hero -->
+                <!-- Coloca el archivo en: src/main/resources/static/img/home/hero-suzuki.jpg -->
+                <img class="hero-main-img"
+                     th:src="@{/img/home/hero-suzuki.jpg}"
+                     src="/img/home/hero-suzuki.jpg"
+                     alt="Moto Suzuki destacada">
+
+                <div class="hero-floating-card">
+                    <div class="small text-secondary mb-1">Destacada del mes</div>
+                    <div><span>GSX-S750</span> • motor 749cc · ideal ciudad + carretera</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: MODELOS DESTACADOS -->
+        <section class="mt-5 pt-3">
+            <div class="d-flex justify-content-between align-items-end mb-3">
+                <div>
+                    <div class="section-title">Modelos destacados</div>
+                    <h2 class="section-heading">Motos Suzuki listas para entrega</h2>
+                </div>
+                <a th:href="@{/motos}" class="text-secondary small">
+                    Ver todas las motos &rarr;
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <!-- Card 1 -->
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-img-top">
+                            <!-- Coloca gsx-r150.jpg en /img/home -->
+                            <img th:src="@{/img/home/gsx-r150.jpg}"
+                                 src="/img/home/gsx-r150.jpg"
+                                 alt="Moto Suzuki deportiva azul">
+                            <div class="card-img-overlay-gradient"></div>
+                        </div>
+                        <div class="card-body">
+                            <span class="badge bg-primary badge-pill mb-2">Deportiva</span>
+                            <h5 class="card-title mb-1">Suzuki GSX-R150</h5>
+                            <p class="small text-secondary mb-2">
+                                Ideal para ciudad con ADN de pista, excelente relación peso/potencia.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-info">Desde $10.900.000</span>
+                                <a th:href="@{/motos}" class="btn btn-sm btn-outline-light">
+                                    Ver más
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-img-top">
+                            <!-- Coloca vstrom-250.jpg en /img/home -->
+                            <img th:src="@{/img/home/vstrom-250.jpg}"
+                                 src="/img/home/vstrom-250.jpg"
+                                 alt="Moto Suzuki touring en carretera">
+                            <div class="card-img-overlay-gradient"></div>
+                        </div>
+                        <div class="card-body">
+                            <span class="badge bg-success badge-pill mb-2">Touring</span>
+                            <h5 class="card-title mb-1">Suzuki V-Strom 250</h5>
+                            <p class="small text-secondary mb-2">
+                                Comodidad y seguridad para viajes largos, lista para tus rutas de fin de semana.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-info">Desde $18.500.000</span>
+                                <a th:href="@{/motos}" class="btn btn-sm btn-outline-light">
+                                    Ver más
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="col-md-4">
+                    <div class="card h-100">
+                        <div class="card-img-top">
+                            <!-- Coloca gixxer-155.jpg en /img/home -->
+                            <img th:src="@{/img/home/gixxer-155.jpg}"
+                                 src="/img/home/gixxer-155.jpg"
+                                 alt="Moto Suzuki naked en la calle">
+                            <div class="card-img-overlay-gradient"></div>
+                        </div>
+                        <div class="card-body">
+                            <span class="badge bg-warning text-dark badge-pill mb-2">Naked</span>
+                            <h5 class="card-title mb-1">Suzuki Gixxer 155</h5>
+                            <p class="small text-secondary mb-2">
+                                Diseño agresivo, perfecta para el día a día con estilo y bajo consumo.
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-bold text-info">Desde $9.800.000</span>
+                                <a th:href="@{/motos}" class="btn btn-sm btn-outline-light">
+                                    Ver más
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION: BENEFICIOS -->
+        <section class="mt-5 pt-4">
+            <div class="row g-4">
+                <div class="col-lg-4">
+                    <div class="section-title mb-2">Por qué MotoStore</div>
+                    <h2 class="section-heading mb-3">Pensado para compradores serios de Suzuki.</h2>
+                    <p class="text-secondary">
+                        No somos un catálogo genérico: nos enfocamos en Suzuki para darte información clara,
+                        facturación organizada y un proceso de compra confiable.
+                    </p>
+                </div>
+                <div class="col-lg-8">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="stat-pill h-100">
+                                <div class="small text-secondary mb-1">Catálogo inteligente</div>
+                                <div class="fw-bold mb-1">Filtros por modelo, año y cilindraje</div>
+                                <div class="small text-secondary">
+                                    Encuentra rápido la Suzuki que se ajusta a tu presupuesto y estilo.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-pill h-100">
+                                <div class="small text-secondary mb-1">Ventas con factura</div>
+                                <div class="fw-bold mb-1">Facturas PDF automáticas</div>
+                                <div class="small text-secondary">
+                                    Recibe tu factura en PDF al completar la compra, lista para descargar o compartir.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-pill h-100">
+                                <div class="small text-secondary mb-1">Historial</div>
+                                <div class="fw-bold mb-1">Control total de tus compras</div>
+                                <div class="small text-secondary">
+                                    Revisa tus compras, medios de pago usados y motos adquiridas en un solo lugar.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-pill h-100">
+                                <div class="small text-secondary mb-1">Soporte</div>
+                                <div class="fw-bold mb-1">Acompañamiento en la compra</div>
+                                <div class="small text-secondary">
+                                    Te guiamos en el proceso para que elijas la moto ideal según tu experiencia y uso.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA FINAL -->
+        <section class="mt-5 pt-4 pb-4">
+            <div class="card bg-black">
+                <div class="card-body p-4 p-md-5 d-flex flex-column flex-md-row align-items-md-center justify-content-between">
+                    <div class="mb-3 mb-md-0">
+                        <div class="small text-secondary text-uppercase mb-1">Listo para arrancar</div>
+                        <h2 class="h4 mb-1 text-white">Empieza a armar tu garage Suzuki online.</h2>
+                        <p class="text-secondary mb-0">
+                            Crea tu cuenta, guarda motos favoritas y recibe tu factura en PDF cada vez que compres.
+                        </p>
+                    </div>
+                    <div class="d-flex flex-column flex-sm-row gap-2">
+                        <a th:href="@{/register}" class="btn btn-primary">
+                            Crear cuenta gratis
+                        </a>
+                        <a th:href="@{/motos}" class="btn btn-outline-light">
+                            Ver catálogo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<footer class="mt-4 py-3">
+    <div class="container d-flex flex-column flex-md-row justify-content-between text-secondary small">
+        <span>© <span th:text="${#dates.year(#dates.createNow())}">2025</span> MotoStore Suzuki. Todos los derechos reservados.</span>
+        <span>Hecho para amantes de Suzuki 🏍️</span>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+</body>
+</html>

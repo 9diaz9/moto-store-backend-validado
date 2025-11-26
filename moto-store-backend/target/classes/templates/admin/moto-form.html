@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar moto Suzuki</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet"/>
+
+    <style>
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            padding-bottom: 50px;
+        }
+
+        .panel {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 40px;
+            border: 1px solid #334155;
+        }
+
+        .form-control, .form-select {
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: #e2e8f0;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 0.2rem rgba(56,189,248,0.25);
+        }
+
+        label {
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            border-color: #2563eb;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <a href="/admin/dashboard" class="d-block mt-4 mb-3 text-info">← Volver al panel</a>
+
+    <h2 class="fw-bold">Agregar moto Suzuki</h2>
+    <p class="text-secondary">Selecciona una referencia de Suzuki y ajusta los datos si es necesario.</p>
+
+    <div class="panel">
+        <!-- fila: formulario + vista previa -->
+        <div class="row g-4">
+
+            <!-- COLUMNA FORMULARIO -->
+            <div class="col-lg-8">
+                <form th:action="@{/admin/motos}" th:object="${moto}" method="post">
+
+                    <!-- MARCA FIJA -->
+                    <div class="mb-3">
+                        <label>Marca</label>
+                        <input type="text" th:field="*{brand}" class="form-control" readonly>
+                        <div class="form-text text-secondary">La marca está fija en Suzuki.</div>
+                    </div>
+
+                    <!-- REFERENCIA -->
+                    <div class="mb-3">
+                        <label>Referencia Suzuki</label>
+                        <select id="reference" class="form-select">
+                            <option value="">Selecciona una referencia</option>
+                            <option value="Suzuki DR150">Suzuki DR150</option>
+                            <option value="Suzuki Gixxer 250">Suzuki Gixxer 250</option>
+                            <option value="Suzuki V-Strom 250 SX">Suzuki V-Strom 250 SX</option>
+                            <option value="Suzuki GSX-S750">Suzuki GSX-S750 (Alto cilindraje)</option>
+                            <option value="Suzuki V-Strom 1050XT">Suzuki V-Strom 1050XT (Alto cilindraje)</option>
+                        </select>
+                        <div class="form-text text-secondary">Completa automáticamente los datos según la referencia.</div>
+                    </div>
+
+                    <!-- MODELO -->
+                    <div class="mb-3">
+                        <label>Modelo</label>
+                        <input id="modelField" type="text" th:field="*{model}" class="form-control"
+                               placeholder="Ej: Gixxer 250">
+                    </div>
+
+                    <!-- AÑO -->
+                    <div class="mb-3">
+                        <label for="year" class="form-label">Año</label>
+
+                        <input type="number"
+                               id="year"
+                               class="form-control bg-dark text-light border-0"
+                               th:field="*{year}"
+                               th:attr="min=${minYear}, max=${maxYear}"
+                               placeholder="Ej: 2025"
+                               required/>
+
+                        <div class="form-text text-secondary">
+                            Solo se permite un modelo entre
+                            <strong th:text="${minYear}">2023</strong> y
+                            <strong th:text="${maxYear}">2026</strong>.
+                        </div>
+                    </div>
+
+                    <!-- CILINDRAJE -->
+                    <div class="mb-3">
+                        <label>Cilindraje (cc)</label>
+                        <input id="engineCc" type="number" th:field="*{engineCc}" class="form-control">
+                    </div>
+
+                    <!-- PRECIO -->
+                    <div class="mb-3">
+                        <label>Precio de venta</label>
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            <input id="price" type="number" th:field="*{price}" class="form-control">
+                        </div>
+                    </div>
+
+                    <!-- STOCK -->
+                    <div class="mb-3">
+                        <label>Stock inicial</label>
+                        <input type="number" th:field="*{stock}" class="form-control" min="0">
+                    </div>
+
+                    <!-- DESCRIPCIÓN -->
+                    <div class="mb-3">
+                        <label>Descripción</label>
+                        <textarea id="description" th:field="*{description}" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <!-- NUEVO: clave de imagen -->
+                    <input type="hidden" id="imageKey" th:field="*{imageKey}">
+
+                    <button class="btn btn-primary w-100">Guardar moto</button>
+
+                </form>
+            </div>
+
+            <!-- COLUMNA VISTA PREVIA -->
+            <div class="col-lg-4">
+                <div class="card bg-dark text-center p-3">
+                    <h5 class="mb-3">Vista previa de la moto</h5>
+                    <img id="motoPreview"
+                         src="/img/motos/default-1.jpg"
+                         alt="Vista previa moto"
+                         class="img-fluid rounded">
+                    <p class="mt-2 text-secondary mb-0">
+                        La imagen se actualizará según la referencia seleccionada.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT PARA AUTORELLENO -->
+<script th:inline="javascript">
+    const MODELOS_SUZUKI = {
+        "Suzuki DR150": {
+            cc: 150,
+            price: 12000000,
+            description: "Suzuki DR150: doble propósito ligera, ideal para ciudad y trochas suaves.",
+            imageKey: "dr150"
+        },
+        "Suzuki Gixxer 250": {
+            cc: 250,
+            price: 15900000,
+            description: "Gixxer 250: naked deportiva con excelente respuesta para recorridos urbanos.",
+            imageKey: "gixxer-250"
+        },
+        "Suzuki V-Strom 250 SX": {
+            cc: 250,
+            price: 21000000,
+            description: "V-Strom 250 SX: moto turismo-aventura para viajes largos y rutas mixtas.",
+            imageKey: "vstrom-250sx"
+        },
+        "Suzuki GSX-S750": {
+            cc: 750,
+            price: 48000000,
+            description: "GSX-S750: naked de alto rendimiento con ADN deportivo y gran potencia.",
+            imageKey: "gsxs-750"
+        },
+        "Suzuki V-Strom 1050XT": {
+            cc: 1037,
+            price: 68000000,
+            description: "V-Strom 1050XT: maxitrail avanzada ideal para viajes largos y aventura.",
+            imageKey: "vstrom-1050xt"
+        }
+    };
+
+    const referenceSelect = document.getElementById("reference");
+    const engineCc = document.getElementById("engineCc");
+    const price = document.getElementById("price");
+    const description = document.getElementById("description");
+    const modelField = document.getElementById("modelField");
+    const imageKeyInput = document.getElementById("imageKey");
+    const previewImg = document.getElementById("motoPreview");
+
+    referenceSelect.addEventListener("change", () => {
+        const ref = referenceSelect.value;
+        const data = MODELOS_SUZUKI[ref];
+
+        if (data) {
+            engineCc.value = data.cc;
+            price.value = data.price;
+            description.value = data.description;
+            modelField.value = ref;
+            imageKeyInput.value = data.imageKey;
+
+            if (previewImg && data.imageKey) {
+                previewImg.src = `/img/motos/${data.imageKey}-1.jpg`;
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

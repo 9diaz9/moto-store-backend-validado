@@ -23,7 +23,15 @@ public class DataInitializer {
                 admin.setRole(UserRole.ROLE_SUPER_ADMIN);        // 👈 rol
                 admin.setEnabled(true);
                 admin.setVerificationCode(null);
-
+    //crear usuario de prueba
+    User testUser = new User();
+    testUser.setEmail("prueba@motos.com");
+    testUser.setPassword(encoder.encode("nicolas@123"));
+    testUser.setRole(UserRole.ROLE_CUSTOMER);
+    testUser.setEnabled(true);
+    testUser.setVerificationCode(null);
+    userRepository.save(testUser);
+    System.out.println(">>> Usuario de prueba creado: prueba@motos.com / nicolas@123");
                 userRepository.save(admin);
                 System.out.println(">>> ADMIN creado: " + email + " / Admin@123");
             }

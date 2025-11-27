@@ -30,6 +30,8 @@ spring:
           ssl:
             trust: smtp.gmail.com
 
+
+
 server:
   port: ${PORT:8080}
 
@@ -39,3 +41,5 @@ logging:
     org.springframework.mail: DEBUG
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+

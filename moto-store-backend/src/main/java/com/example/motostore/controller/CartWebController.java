@@ -56,11 +56,17 @@ public class CartWebController {
     // ==========================================================
     @PostMapping("/add")
     public String addItem(@RequestParam Long motoId,
-                          @RequestParam(defaultValue = "1") int quantity) {
+                          @RequestParam(defaultValue = "1") int quantity,
+                          RedirectAttributes redirectAttributes) {
 
         Long customerId = getCurrentCustomerId();
-        cartService.addItem(customerId, motoId, quantity);
-        return "redirect:/cart";
+        try {
+            cartService.addItem(customerId, motoId, quantity);
+            return "redirect:/cart";
+        } catch (RuntimeException ex) {
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/catalog";
+        }
     }
 
     // ==========================================================

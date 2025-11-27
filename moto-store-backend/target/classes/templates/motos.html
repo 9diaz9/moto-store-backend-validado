@@ -69,7 +69,7 @@
                         <span th:text="${#numbers.formatDecimal(moto.price, 0, 'POINT', 0, 'COMMA')}"></span>
                     </td>
                     <td>
-                        <span th:text="${moto.stock}"></span>
+                        <span th:text="${availableMap[moto.id]}"></span>
                     </td>
                 </tr>
                 <tr th:if="${#lists.isEmpty(motos)}">

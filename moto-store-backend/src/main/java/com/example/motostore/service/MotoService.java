@@ -2,6 +2,7 @@ package com.example.motostore.service;
 
 import com.example.motostore.model.Moto;
 import com.example.motostore.repository.MotoRepository;
+import com.example.motostore.repository.CartRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,9 +11,11 @@ import java.util.List;
 public class MotoService {
 
     private final MotoRepository motoRepository;
+    private final CartRepository cartRepository;
 
-    public MotoService(MotoRepository motoRepository) {
+    public MotoService(MotoRepository motoRepository, CartRepository cartRepository) {
         this.motoRepository = motoRepository;
+        this.cartRepository = cartRepository;
     }
 
     // =====================================================
@@ -98,6 +101,18 @@ public class MotoService {
 
         moto.setStock(moto.getStock() - quantity);
         motoRepository.save(moto);
+    }
+
+    /**
+     * Devuelve el stock disponible para una moto teniendo en cuenta
+     * las unidades actualmente reservadas en todos los carritos.
+     */
+    public int availableStockForMoto(Moto moto) {
+        Long reserved = cartRepository.sumQuantityByMotoId(moto.getId());
+        int reservedInt = reserved == null ? 0 : reserved.intValue();
+        int stock = moto.getStock() == null ? 0 : moto.getStock();
+        int avail = stock - reservedInt;
+        return Math.max(avail, 0);
     }
 
     // =====================================================

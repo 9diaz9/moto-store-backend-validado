@@ -15,6 +15,7 @@ public class CartService {
     private final MotoRepository motoRepository;
     private final CustomerRepository customerRepository;
 
+
     public CartService(CartRepository cartRepository, MotoRepository motoRepository, CustomerRepository customerRepository) {
         this.cartRepository = cartRepository;
         this.motoRepository = motoRepository;
@@ -40,6 +41,24 @@ public class CartService {
         Optional<CartItem> existing = cart.getItems().stream()
                 .filter(ci -> ci.getMoto().getId().equals(motoId))
                 .findFirst();
+
+        int existingQty = existing.map(ci -> ci.getQuantity() == null ? 0 : ci.getQuantity()).orElse(0);
+
+        Long reservedAllLong = cartRepository.sumQuantityByMotoId(motoId);
+        int reservedAll = reservedAllLong == null ? 0 : reservedAllLong.intValue();
+
+        // reservas en otros carros = total reservado - lo que ya está en el carrito actual
+        int reservedByOthers = Math.max(0, reservedAll - existingQty);
+        int stock = moto.getStock() == null ? 0 : moto.getStock();
+        int availableForUser = stock - reservedByOthers;
+
+        if (availableForUser <= 0) {
+            throw new RuntimeException("No hay stock disponible para esta moto");
+        }
+
+        if (quantity > availableForUser) {
+            throw new RuntimeException("Sólo quedan " + availableForUser + " unidades disponibles");
+        }
 
         if (existing.isPresent()) {
             existing.get().setQuantity(existing.get().getQuantity() + quantity);

@@ -10,6 +10,8 @@ public interface MotoRepository extends JpaRepository<Moto, Long> {
 
     List<Moto> findByActiveTrue();
 
+    List<Moto> findByBrandAndModel(String brand, String model);
+
     // Inventario por referencia (marca + modelo)
     @Query("""
            SELECT m.brand AS brand,

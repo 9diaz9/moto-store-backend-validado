@@ -2,6 +2,7 @@ package com.example.motostore.service;
 
 import com.example.motostore.model.Moto;
 import com.example.motostore.repository.MotoRepository;
+import com.example.motostore.repository.MotoStockHistoryRepository;
 import com.example.motostore.repository.CartRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +13,12 @@ public class MotoService {
 
     private final MotoRepository motoRepository;
     private final CartRepository cartRepository;
+    private final MotoStockHistoryRepository historyRepository;
 
-    public MotoService(MotoRepository motoRepository, CartRepository cartRepository) {
+    public MotoService(MotoRepository motoRepository, CartRepository cartRepository, MotoStockHistoryRepository historyRepository) {
         this.motoRepository = motoRepository;
         this.cartRepository = cartRepository;
+        this.historyRepository = historyRepository;
     }
 
     // =====================================================
@@ -56,7 +59,7 @@ public class MotoService {
      * Crea una nueva moto.
      */
     public Moto create(Moto moto) {
-        return motoRepository.save(moto);
+        return saveWithHistory(moto);
     }
 
     /**
@@ -66,7 +69,7 @@ public class MotoService {
         Moto existing = findById(id);   // lanza excepción si no existe
         // Nos aseguramos de mantener el mismo ID
         moto.setId(existing.getId());
-        return motoRepository.save(moto);
+        return saveWithHistory(moto);
     }
 
     /**
@@ -80,7 +83,62 @@ public class MotoService {
      * Guarda o actualiza una moto (uso genérico).
      */
     public Moto save(Moto moto) {
-        return motoRepository.save(moto);
+        return saveWithHistory(moto);
+    }
+
+    private Moto saveWithHistory(Moto moto) {
+        boolean isNew = moto.getId() == null;
+
+        if (!isNew) {
+            // update: detect stock change
+            Moto existing = findById(moto.getId());
+            Integer prev = existing.getStock() == null ? 0 : existing.getStock();
+            Moto saved = motoRepository.save(moto);
+            Integer now = saved.getStock() == null ? 0 : saved.getStock();
+            if (!now.equals(prev)) {
+                recordStockChange(saved, prev, now, now - prev, "Modificación manual de stock");
+            }
+            return saved;
+        } else {
+            // new moto: check if other motos of same brand+model exist
+            Moto saved = motoRepository.save(moto);
+            try {
+                java.util.List<Moto> others = motoRepository.findByBrandAndModel(saved.getBrand(), saved.getModel());
+                int totalOthers = 0;
+                for (Moto m : others) {
+                    if (m.getId().equals(saved.getId())) continue;
+                    totalOthers += m.getStock() == null ? 0 : m.getStock();
+                }
+                int prevTotal = totalOthers;
+                int newTotal = prevTotal + (saved.getStock() == null ? 0 : saved.getStock());
+                recordStockChange(saved, prevTotal, newTotal, (saved.getStock() == null ? 0 : saved.getStock()),
+                        prevTotal > 0 ? "Nueva entrada de stock para referencia existente" : "Creación de nueva referencia");
+            } catch (Exception ex) {
+                // si el repositorio falla por alguna razón, no bloqueamos la creación
+            }
+            return saved;
+        }
+    }
+
+    private void recordStockChange(Moto moto, int previous, int now, int change, String note) {
+        try {
+            com.example.motostore.model.MotoStockHistory ev = new com.example.motostore.model.MotoStockHistory();
+            ev.setMoto(moto);
+            ev.setBrand(moto.getBrand());
+            ev.setModel(moto.getModel());
+            ev.setPreviousStock(previous);
+            ev.setNewStock(now);
+            ev.setChangeAmount(change);
+            // intentar obtener usuario admin desde el contexto de seguridad
+            try {
+                org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null) ev.setAdminUser(auth.getName());
+            } catch (Exception ignored) {}
+            ev.setNote(note);
+            historyRepository.save(ev);
+        } catch (Exception ex) {
+            // No interrumpir la operación principal por fallos en el guardado del histórico
+        }
     }
 
     // =====================================================
@@ -92,14 +150,12 @@ public class MotoService {
      */
     public void decreaseStock(Long motoId, int quantity) {
         Moto moto = findById(motoId);
-
-        if (moto.getStock() < quantity) {
-            // IMPORTANTÍSIMO: no usar getName() (no existe en tu entidad),
-            // así evitamos el error de compilación.
+        int stock = moto.getStock() == null ? 0 : moto.getStock();
+        if (stock < quantity) {
             throw new RuntimeException("Stock insuficiente para la moto con id: " + motoId);
         }
 
-        moto.setStock(moto.getStock() - quantity);
+        moto.setStock(stock - quantity);
         motoRepository.save(moto);
     }
 

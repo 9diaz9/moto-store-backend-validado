@@ -9,7 +9,7 @@ import com.example.motostore.web.dto.RegisterForm;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Random;
+ 
 
 @Service
 public class AuthService {
@@ -17,16 +17,12 @@ public class AuthService {
     private final UserRepository userRepository;
     private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
-    private final EmailService emailService;
-
     public AuthService(UserRepository userRepository,
                        CustomerRepository customerRepository,
-                       PasswordEncoder passwordEncoder,
-                       EmailService emailService) {
+                       PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.customerRepository = customerRepository;
         this.passwordEncoder = passwordEncoder;
-        this.emailService = emailService;
     }
 
     // =====================================================
@@ -53,11 +49,9 @@ public class AuthService {
         user.setEmail(normalizedEmail);
         user.setPassword(passwordEncoder.encode(form.getPassword()));
         user.setRole(UserRole.ROLE_CUSTOMER);
-        user.setEnabled(false); // hasta que verifique código
-
-        // Generar código de verificación (PIN de 6 dígitos)
-        String code = generateVerificationCode();
-        user.setVerificationCode(code);
+        // Activamos la cuenta inmediatamente (sin verificación por correo)
+        user.setEnabled(true);
+        user.setVerificationCode(null);
 
         // Crear cliente asociado
         Customer customer = new Customer();
@@ -68,8 +62,7 @@ public class AuthService {
         // Guardar en BD (por cascada se guarda customer)
         userRepository.save(user);
 
-        // Enviar correo con el código
-        emailService.sendVerificationEmail(user.getEmail(), code);
+        // No enviamos correo de verificación; el usuario queda activo inmediatamente
     }
 
     // =====================================================
@@ -96,12 +89,5 @@ public class AuthService {
                 .orElse(false);
     }
 
-    // =====================================================
-    // UTILIDAD: GENERAR CÓDIGO DE 6 DÍGITOS
-    // =====================================================
-    private String generateVerificationCode() {
-        Random random = new Random();
-        int number = 100000 + random.nextInt(900000); // 6 dígitos
-        return String.valueOf(number);
-    }
+    // (La verificación por correo fue deshabilitada; no se necesita generar código)
 }

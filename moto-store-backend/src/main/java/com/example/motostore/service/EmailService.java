@@ -19,7 +19,7 @@ public class EmailService {
     @Value("${spring.mail.username:no-reply@motostore-suzuki.com}")
     private String fromAddress;
 
-    public EmailService(JavaMailSender mailSender) {
+    public EmailService(@org.springframework.beans.factory.annotation.Autowired(required = false) JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
@@ -107,32 +107,40 @@ public class EmailService {
  * Envía al cliente una factura en PDF adjunta.
  */
         public void sendInvoiceEmail(String to, byte[] pdfBytes, String fileName) {
+            if (mailSender == null) {
+                // Mail not configured: log and skip sending
+                System.err.println("[EmailService] JavaMailSender no configurado, omitiendo envío de factura a: " + to);
+                return;
+            }
+
             try {
-        MimeMessage message = mailSender.createMimeMessage();
+                MimeMessage message = mailSender.createMimeMessage();
 
-        MimeMessageHelper helper = new MimeMessageHelper(
-                message,
-                MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
-                "UTF-8"
-        );
+                MimeMessageHelper helper = new MimeMessageHelper(
+                        message,
+                        MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED,
+                        "UTF-8"
+                );
 
-        helper.setFrom(fromAddress);
-        helper.setTo(to);
-        helper.setSubject("Factura de tu compra en MotoStore Suzuki");
-        helper.setText("""
-                <h2>Gracias por tu compra</h2>
-                <p>Adjuntamos la factura electrónica correspondiente a tu pedido.</p>
-                <p>Si no reconoces esta compra, por favor contáctanos.</p>
-                """, true);
+                helper.setFrom(fromAddress);
+                helper.setTo(to);
+                helper.setSubject("Factura de tu compra en MotoStore Suzuki");
+                helper.setText("""
+                        <h2>Gracias por tu compra</h2>
+                        <p>Adjuntamos la factura electrónica correspondiente a tu pedido.</p>
+                        <p>Si no reconoces esta compra, por favor contáctanos.</p>
+                        """, true);
 
-        // Adjuntar PDF
-        helper.addAttachment(fileName, () -> new java.io.ByteArrayInputStream(pdfBytes));
+                // Adjuntar PDF
+                helper.addAttachment(fileName, () -> new java.io.ByteArrayInputStream(pdfBytes));
 
-        mailSender.send(message);
+                mailSender.send(message);
 
-    } catch (Exception e) {
-        throw new RuntimeException("Error enviando la factura por correo", e);
+            } catch (Exception e) {
+                // No propagamos la excepción: registra y continúa (no debe cancelar la venta)
+                System.err.println("[EmailService] Error enviando la factura: " + e.getMessage());
+            }
+        }
+
     }
-} 
-}
 

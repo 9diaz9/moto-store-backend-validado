@@ -2,6 +2,7 @@ package com.example.motostore.controller;
 
 import com.example.motostore.model.Moto;
 import com.example.motostore.service.MotoService;
+import com.example.motostore.repository.MotoStockHistoryRepository;
 import com.example.motostore.service.SaleService;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
@@ -20,10 +21,12 @@ public class AdminController {
 
     private final MotoService motoService;
     private final SaleService saleService;
+    private final MotoStockHistoryRepository historyRepository;
 
-    public AdminController(MotoService motoService, SaleService saleService) {
+    public AdminController(MotoService motoService, SaleService saleService, MotoStockHistoryRepository historyRepository) {
         this.motoService = motoService;
         this.saleService = saleService;
+        this.historyRepository = historyRepository;
     }
 
     @GetMapping("/dashboard")
@@ -102,6 +105,12 @@ public class AdminController {
     public String salesHistory(Model model) {
         model.addAttribute("sales", saleService.getAllSales());
         return "admin/sales";
+    }
+
+    @GetMapping("/motos/history")
+    public String stockHistory(Model model) {
+        model.addAttribute("history", historyRepository.findAll());
+        return "admin/stock-history";
     }
 }
 

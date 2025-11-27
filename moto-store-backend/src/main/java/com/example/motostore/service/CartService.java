@@ -2,9 +2,12 @@ package com.example.motostore.service;
 
 import com.example.motostore.model.*;
 import com.example.motostore.repository.CartRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import com.example.motostore.repository.CustomerRepository;
 import com.example.motostore.repository.MotoRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -14,6 +17,9 @@ public class CartService {
     private final CartRepository cartRepository;
     private final MotoRepository motoRepository;
     private final CustomerRepository customerRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
 
     public CartService(CartRepository cartRepository, MotoRepository motoRepository, CustomerRepository customerRepository) {
@@ -75,13 +81,31 @@ public class CartService {
 
     public Cart removeItem(Long customerId, Long motoId) {
         Cart cart = getOrCreateCart(customerId);
+        // Remove via collection so Hibernate handles orphanRemoval correctly
         cart.getItems().removeIf(ci -> ci.getMoto().getId().equals(motoId));
-        return cartRepository.save(cart);
+        Cart saved = cartRepository.save(cart);
+        try { entityManager.flush(); } catch (Exception ignored) {}
+        return saved;
     }
 
+    @Transactional
     public Cart clearCart(Long customerId) {
         Cart cart = getOrCreateCart(customerId);
-        cart.getItems().clear();
-        return cartRepository.save(cart);
+        Long cartId = cart.getId();
+        if (cartId != null) {
+            // Use orphanRemoval by clearing the collection and saving the cart
+            cart.getItems().clear();
+            cartRepository.save(cart);
+            // flush to execute deletes immediately
+            try { entityManager.flush(); } catch (Exception ignored) {}
+        }
+
+        // Return a fresh cart from the repository (detached/clean state)
+        return cartRepository.findByCustomerId(customerId).orElseGet(() -> {
+            Cart newCart = new Cart();
+            Customer c = customerRepository.findById(customerId).orElse(null);
+            newCart.setCustomer(c);
+            return cartRepository.save(newCart);
+        });
     }
 }

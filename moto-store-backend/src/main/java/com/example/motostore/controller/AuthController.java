@@ -49,9 +49,9 @@ public class AuthController {
 
         try {
             authService.registerNewCustomer(form);
-            // después de registrarse, lo mandamos a la pantalla de verificar
-            model.addAttribute("email", form.getEmail());
-            return "verify";
+            // Cuenta creada y activada inmediatamente: redirigimos al login
+            model.addAttribute("message", "Registro completo. Ya puedes iniciar sesión.");
+            return "login";
         } catch (RuntimeException ex) {
             model.addAttribute("error", ex.getMessage());
             return "register";

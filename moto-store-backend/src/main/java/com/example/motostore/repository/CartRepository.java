@@ -5,10 +5,23 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.repository.query.Param;
 
 public interface CartRepository extends JpaRepository<Cart, Long> {
     Optional<Cart> findByCustomerId(Long customerId);
 
     @Query("SELECT COALESCE(SUM(ci.quantity),0) FROM CartItem ci WHERE ci.moto.id = :motoId")
     Long sumQuantityByMotoId(@Param("motoId") Long motoId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM CartItem ci WHERE ci.cart.id = :cartId")
+    void deleteItemsByCartId(@Param("cartId") Long cartId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM CartItem ci WHERE ci.cart.id = :cartId AND ci.moto.id = :motoId")
+    void deleteItemByCartIdAndMotoId(@Param("cartId") Long cartId, @Param("motoId") Long motoId);
 }

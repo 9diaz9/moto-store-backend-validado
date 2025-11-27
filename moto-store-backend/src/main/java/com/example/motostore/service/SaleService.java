@@ -88,29 +88,45 @@ public class SaleService {
         // Guardar venta
         Sale saved = saleRepository.save(sale);
 
-        // Generar PDF y guardar la ruta
-        String pdfPath = pdfInvoiceService.generateInvoice(saved);
-        saved.setInvoicePdfPath(pdfPath);
-        saved = saleRepository.save(saved);
+        // Generar PDF, intentar enviar la factura por correo y guardar la ruta
+        try {
+            String pdfPath = pdfInvoiceService.generateInvoice(saved);
+            if (pdfPath != null) {
+                saved.setInvoicePdfPath(pdfPath);
+                saved = saleRepository.save(saved);
 
-        // Enviar la factura por correo al cliente
-try {
-    // Leer el PDF generado como bytes
-    java.nio.file.Path path = java.nio.file.Paths.get(pdfPath);
-    byte[] pdfBytes = java.nio.file.Files.readAllBytes(path);
-
-    String email = customer.getUser().getEmail();  // correo del cliente
-    String fileName = "factura_" + saved.getId() + ".pdf";
-
-    emailService.sendInvoiceEmail(email, pdfBytes, fileName);
-
+                // Leer el PDF generado como bytes solo si existe
+                java.nio.file.Path path = java.nio.file.Paths.get(pdfPath);
+                if (java.nio.file.Files.exists(path)) {
+                    byte[] pdfBytes = java.nio.file.Files.readAllBytes(path);
+                    try {
+                        String email = customer.getUser().getEmail();  // correo del cliente
+                        String fileName = "factura_" + saved.getId() + ".pdf";
+                        emailService.sendInvoiceEmail(email, pdfBytes, fileName);
+                    } catch (Exception e) {
+                        // No lanzamos excepción que provoque rollback; solo registramos el problema
+                        System.err.println("Error enviando la factura por correo: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.err.println("Invoice PDF no encontrado en ruta: " + pdfPath);
+                }
+            } else {
+                System.err.println("pdfInvoiceService devolvió ruta nula para la factura de la venta " + saved.getId());
+            }
         } catch (Exception e) {
-    throw new RuntimeException("Error enviando la factura al correo", e);
-    }
-
-
-        // Limpiar carrito
-        cartService.clearCart(customerId);
+            // Capturamos cualquier error de generación/lectura/envío y no propagamos
+            System.err.println("Error generando/enviando factura: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            // Limpiar carrito siempre; si la generación/envío falla no debe revertir la compra
+            try {
+                cartService.clearCart(customerId);
+            } catch (Exception e) {
+                System.err.println("Error limpiando carrito tras la compra: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
 
         return saved;
     }

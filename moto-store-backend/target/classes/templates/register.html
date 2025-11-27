@@ -2,42 +2,32 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Crear cuenta - MotoStore Suzuki</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet" crossorigin="anonymous">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - MotoStore</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" th:href="@{/css/styles.css}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
             background: radial-gradient(circle at top, #1e293b, #020617);
             color: #e5e7eb;
             min-height: 100vh;
         }
-        .register-card {
-            background: rgba(15, 23, 42, 0.92);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            max-width: 480px;
+        .login-card {
+            background: rgba(15, 23, 42, 0.9);
+            border-radius: 1rem;
+            padding: 2rem;
             width: 100%;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(148, 163, 184, .25);
-            box-shadow: 0 25px 70px rgba(0, 0, 0, .55);
+            max-width: 760px;
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(148, 163, 184, .12);
+            box-shadow: 0 25px 80px rgba(0,0,0,.6);
         }
-        .form-control {
-            background: #0f172a;
-            color: #e5e7eb;
-            border: 1px solid #334155;
-        }
-        .form-control:focus {
-            background: #1e293b;
-            color: #e5e7eb;
-            border-color: #38bdf8;
-            box-shadow: 0 0 0 .2rem rgba(56, 189, 248, .25);
-        }
-        .title {
-            font-size: 1.8rem;
+        .card-title-hero {
+            font-size: 1.6rem;
             font-weight: 700;
             background: linear-gradient(90deg, #38bdf8, #22c55e);
+            background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
@@ -46,98 +36,849 @@
             border: none;
             font-weight: 600;
         }
-        .btn-primary:hover {
-            background: linear-gradient(90deg, #1d4ed8, #16a34a);
-        }
-        .error-alert {
-            background: rgba(255, 0, 0, .12);
-            border-left: 4px solid #ef4444;
-            padding: .75rem 1rem;
-            border-radius: .5rem;
-            margin-bottom: 1rem;
-            color: #fca5a5;
-        }
-        a { color: #38bdf8; }
-        a:hover { color: #0ea5e9; }
+        .btn-primary:hover { background: linear-gradient(90deg, #1d4ed8, #16a34a); }
+        .password-toggle { background: transparent; border: none; color: #cbd5e1; }
+        .validation-icon { margin-right: .35rem; }
+        .requirement-valid { color: #28a745; }
+        .requirement-invalid { color: #6b7280; }
+        .password-strength { width: 100%; height: 100%; display: block; }
+        .strength-weak { background: #ef4444; width: 25%; }
+        .strength-fair { background: #f59e0b; width: 50%; }
+        .strength-good { background: #0ea5e9; width: 75%; }
+        .strength-strong { background: #10b981; width: 100%; }
+        .text-muted { color: #9ca3af !important; }
+        .input-dark { background: #0b1220; color: #e5e7eb; border: 1px solid rgba(148,163,184,.08); }
+        .error-box { background: rgba(255, 0, 0, .06); border-left: 4px solid #ef4444; color: #fca5a5; padding: .7rem 1rem; border-radius: .5rem; margin-bottom: 1rem; }
     </style>
 </head>
+<body class="d-flex justify-content-center align-items-center min-vh-100">
+    <div class="login-card">
 
-<body class="d-flex justify-content-center align-items-center p-3">
-
-<div class="register-card">
-
-    <h1 class="title text-center mb-2">Crear cuenta</h1>
-    <p class="text-secondary text-center small mb-4">Regístrate para comprar motos Suzuki y gestionar tus pedidos</p>
-
-    <!-- Error general -->
-    <div th:if="${error}" class="error-alert" th:text="${error}"></div>
-
-    <form th:action="@{/register}" th:object="${form}" method="post" novalidate>
-
-        <!-- Nombre -->
-        <div class="mb-3">
-            <label class="form-label">Nombre completo</label>
-            <input type="text"
-                   th:field="*{fullName}"
-                   class="form-control"
-                   th:classappend="${#fields.hasErrors('fullName')}? ' is-invalid'">
-            <div class="invalid-feedback"
-                 th:if="${#fields.hasErrors('fullName')}"
-                 th:errors="*{fullName}"></div>
+        <div class="text-start mb-3">
+            <a th:href="@{/}" class="btn btn-outline-light btn-sm">
+                <i class="fas fa-arrow-left me-1"></i> Volver al Home
+            </a>
         </div>
 
-        <!-- Email -->
-        <div class="mb-3">
-            <label class="form-label">Correo electrónico</label>
-            <input type="email"
-                   th:field="*{email}"
-                   class="form-control"
-                   th:classappend="${#fields.hasErrors('email')}? ' is-invalid'">
-            <div class="invalid-feedback"
-                 th:if="${#fields.hasErrors('email')}"
-                 th:errors="*{email}"></div>
+        <div class="text-center mb-3">
+            <h1 class="card-title-hero">Crear Cuenta</h1>
+            <p class="text-muted">Regístrate para empezar a comprar productos</p>
         </div>
 
-        <!-- Contraseña -->
-        <div class="mb-3">
-            <label class="form-label">Contraseña</label>
-            <input type="password"
-                   th:field="*{password}"
-                   class="form-control"
-                   th:classappend="${#fields.hasErrors('password')}? ' is-invalid'">
-            <div class="invalid-feedback"
-                 th:if="${#fields.hasErrors('password')}"
-                 th:errors="*{password}"></div>
+        <div th:if="${error}" class="error-box">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span th:text="${error}"></span>
         </div>
 
-        <!-- Confirmar contraseña -->
-        <div class="mb-3">
-            <label class="form-label">Confirmar contraseña</label>
-            <input type="password"
-                   th:field="*{confirmPassword}"
-                   class="form-control"
-                   th:classappend="${#fields.hasErrors('confirmPassword')}? ' is-invalid'">
+        <form th:action="@{/register}" th:object="${form}" method="post" id="registerForm" novalidate>
+                            <!-- Campo Nombre y Apellido -->
+                            <div class="mb-4">
+                                <label for="nombre" class="form-label fw-semibold">Nombre y Apellido *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent"><i class="fas fa-user text-muted"></i></span>
+                                    <input type="text" class="form-control input-dark" id="nombre" name="fullName" th:field="*{fullName}"
+                                           placeholder="Ej: Juan Pérez" required
+                                           pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,50}$"
+                                           oninput="validateNombre()">
+                                </div>
+                                <div class="valid-feedback" id="nombreValid" style="display:none;">
+                                    <i class="fas fa-check-circle validation-icon"></i>Nombre válido
+                                </div>
+                                <div class="invalid-feedback" id="nombreError" style="display:none;">
+                                    <i class="fas fa-exclamation-circle validation-icon"></i>
+                                    <span id="nombreErrorText"></span>
+                                </div>
+                                <div id="apiStatus" class="mt-1" style="display: none;">
+                                    <small><i class="fas fa-sync-alt fa-spin"></i> <span>Verificando nombre...</span></small>
+                                </div>
+                                <div class="form-text">
+                                    <small>Nombre obligatorio, apellido opcional. Solo letras, cada palabra 3-20 caracteres.</small>
+                                </div>
+                            </div>
 
-            <div class="invalid-feedback"
-                 th:if="${#fields.hasErrors('confirmPassword')}"
-                 th:errors="*{confirmPassword}"></div>
+                            <!-- Campo Email -->
+                            <div class="mb-4">
+                                <label for="email" class="form-label fw-semibold">Email *</label>
+                                                                <div class="input-group">
+                                                                        <span class="input-group-text bg-transparent"><i class="fas fa-envelope text-muted"></i></span>
+                                                                         <input type="email" class="form-control input-dark" id="email" name="email" th:field="*{email}"
+                                                                                 placeholder="tucorreo@gmail.com" required
+                                                                                     oninput="validateEmail()">
+                                                                </div>
+                                <div class="valid-feedback" id="emailValid" style="display:none;">
+                                    <i class="fas fa-check-circle validation-icon"></i>Email válido
+                                </div>
+                                <div class="invalid-feedback" id="emailError" style="display:none;">
+                                    <i class="fas fa-exclamation-circle validation-icon"></i>
+                                    <span id="emailErrorText"></span>
+                                </div>
+                                <div class="form-text">
+                                    <small>Solo se aceptan cuentas @gmail.com. 3-30 caracteres antes del @.</small>
+                                </div>
+                            </div>
+
+                            <!-- Campo Contraseña -->
+                            <div class="mb-4">
+                                <label for="password" class="form-label fw-semibold">Contraseña *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent"><i class="fas fa-lock text-muted"></i></span>
+                                    <input type="password" class="form-control input-dark" id="password" name="password" th:field="*{password}"
+                                           placeholder="Mínimo 8 caracteres" minlength="8" required
+                                           oninput="validatePassword()">
+                                    <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                                <div class="progress-container">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <small>Fortaleza:</small>
+                                        <small id="strengthText" class="text-muted">Débil</small>
+                                    </div>
+                                    <div class="progress" style="height: 6px; border-radius: 3px; background: #e6e6e6;">
+                                        <div id="passwordStrength" class="password-strength strength-weak"></div>
+                                    </div>
+                                </div>
+
+                                <div class="requirement-list mt-2">
+                                    <div class="requirement-item" id="reqLength">
+                                        <i class="fas fa-circle requirement-invalid"></i>
+                                        <span>Mínimo 8 caracteres</span>
+                                    </div>
+                                    <div class="requirement-item" id="reqLowercase">
+                                        <i class="fas fa-circle requirement-invalid"></i>
+                                        <span>Al menos una minúscula</span>
+                                    </div>
+                                    <div class="requirement-item" id="reqUppercase">
+                                        <i class="fas fa-circle requirement-invalid"></i>
+                                        <span>Al menos una mayúscula</span>
+                                    </div>
+                                    <div class="requirement-item" id="reqNumber">
+                                        <i class="fas fa-circle requirement-invalid"></i>
+                                        <span>Al menos un número</span>
+                                    </div>
+                                    <div class="requirement-item" id="reqSpecial">
+                                        <i class="fas fa-circle requirement-invalid"></i>
+                                        <span>Al menos un símbolo (!@#$%^&*)</span>
+                                    </div>
+                                </div>
+                                <div class="valid-feedback" id="passwordValid" style="display:none;">
+                                    <i class="fas fa-check-circle validation-icon"></i>Contraseña válida
+                                </div>
+                                <div class="invalid-feedback" id="passwordError" style="display:none;">
+                                    <i class="fas fa-exclamation-circle validation-icon"></i>
+                                    <span id="passwordErrorText"></span>
+                                </div>
+                            </div>
+
+                            <!-- Confirmar contraseña -->
+                            <div class="mb-4">
+                                <label for="confirmPassword" class="form-label fw-semibold">Confirmar contraseña *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-transparent"><i class="fas fa-lock text-muted"></i></span>
+                                    <input type="password" class="form-control input-dark" id="confirmPassword" name="confirmPassword" th:field="*{confirmPassword}"
+                                           placeholder="Repite la contraseña" minlength="8" required oninput="validateConfirmPassword()">
+                                </div>
+                                <div class="invalid-feedback" id="confirmPasswordError" style="display:none;">
+                                    <i class="fas fa-exclamation-circle validation-icon"></i>
+                                    <span id="confirmPasswordErrorText"></span>
+                                </div>
+                            </div>
+
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-primary btn-lg fw-semibold" id="submitButton" disabled>
+                                    <i class="fas fa-user-plus me-2"></i> Crear Cuenta
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-4 pt-3 border-top">
+                            <p class="mb-2">¿Ya tienes una cuenta?</p>
+                            <a th:href="@{/login}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-sign-in-alt me-1"></i> Inicia sesión aquí
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <button type="submit" class="btn btn-primary w-100 mt-2">Registrarme</button>
-    </form>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 
-    <p class="mt-4 mb-1 text-center small text-secondary">
-        ¿Ya tienes cuenta?
-        <a th:href="@{/login}">Inicia sesión</a>
-    </p>
+    <script>
+        // Variables de estado de validación
+        let isNombreValid = false;
+        let isEmailValid = false;
+        let isPasswordValid = false;
+        let isConfirmValid = false;
+        let apiTimeout = null;
 
-    <p class="text-center small">
-        <a th:href="@{/}">Volver al inicio</a>
-    </p>
+        function togglePassword(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = passwordInput.parentNode.querySelector('.password-toggle i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('fa-eye');
+                toggleIcon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('fa-eye-slash');
+                toggleIcon.classList.add('fa-eye');
+            }
+        }
 
-</div>
+        async function validateNombre() {
+            const nombreInput = document.getElementById('nombre');
+            const errorElement = document.getElementById('nombreError');
+            const errorText = document.getElementById('nombreErrorText');
+            const validElement = document.getElementById('nombreValid');
+            const apiStatus = document.getElementById('apiStatus');
+            const value = nombreInput.value.trim();
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous"></script>
+            nombreInput.classList.remove('is-valid', 'is-invalid');
+            errorElement.style.display = 'none';
+            validElement.style.display = 'none';
+            apiStatus.style.display = 'none';
+
+            if (apiTimeout) {
+                clearTimeout(apiTimeout);
+                apiTimeout = null;
+            }
+
+            if (value === '') {
+                showError(nombreInput, errorElement, errorText, 'El nombre es obligatorio');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
+                showError(nombreInput, errorElement, errorText, 'Solo se permiten letras y espacios. No se permiten números ni símbolos.');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (value.length < 2 || value.length > 50) {
+                showError(nombreInput, errorElement, errorText, 'El nombre debe tener entre 2 y 50 caracteres');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (/\s{3,}/.test(value)) {
+                showError(nombreInput, errorElement, errorText, 'No se permiten más de dos espacios seguidos');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const words = value.split(/\s+/).filter(word => word.length > 0);
+            if (words.length < 1 || words.length > 2) {
+                showError(nombreInput, errorElement, errorText, 'Debe contener 1 o 2 palabras (nombre obligatorio y apellido opcional)');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            for (let word of words) {
+                if (word.length < 3) {
+                    showError(nombreInput, errorElement, errorText, `Cada palabra debe tener al menos 3 caracteres. "${word}" tiene ${word.length}.`);
+                    isNombreValid = false;
+                    updateSubmitButton();
+                    return;
+                }
+                if (word.length > 20) {
+                    showError(nombreInput, errorElement, errorText, `Cada palabra debe tener máximo 20 caracteres. "${word}" tiene ${word.length}.`);
+                    isNombreValid = false;
+                    updateSubmitButton();
+                    return;
+                }
+            }
+
+            const nombreValue = value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const nombreSinEspacios = nombreValue.replace(/\s/g, '');
+
+            if (/(.)\1{2,}/.test(nombreValue)) {
+                showError(nombreInput, errorElement, errorText, 'El nombre contiene caracteres repetidos de forma inusual');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const secuenciasTeclado = [
+                'qwerty', 'asdfgh', 'zxcvbn', 'poiuyt', 'lkjhgf', 'mnbvcx',
+                'qazwsx', 'edcrfv', 'tgbnhy', 'yhnujm', 'ikmloj', 'plmokn',
+                '123456', 'abcdef', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm'
+            ];
+            if (secuenciasTeclado.some(seq => nombreSinEspacios.includes(seq))) {
+                showError(nombreInput, errorElement, errorText, 'El nombre contiene secuencias de teclado no válidas');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const paresRepetidos = nombreSinEspacios.match(/([a-z]{2})\1+/g);
+            if (paresRepetidos && paresRepetidos.some(par => par.length >= 4)) {
+                showError(nombreInput, errorElement, errorText, 'El nombre contiene patrones de letras repetidos (ej: abab)');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const vocales = (nombreSinEspacios.match(/[aeiou]/g) || []).length;
+            const consonantes = (nombreSinEspacios.match(/[bcdfghjklmnpqrstvwxyz]/g) || []).length;
+            const longitudTotal = nombreSinEspacios.length;
+            if (longitudTotal > 0) {
+                const proporcionVocales = vocales / longitudTotal;
+                if (proporcionVocales < 0.25 || proporcionVocales > 0.6) {
+                    showError(nombreInput, errorElement, errorText, 'El nombre tiene una proporción inusual de vocales y consonantes');
+                    isNombreValid = false;
+                    updateSubmitButton();
+                    return;
+                }
+
+                if (/[bcdfghjklmnpqrstvwxyz]{4,}/.test(nombreSinEspacios)) {
+                    showError(nombreInput, errorElement, errorText, 'El nombre contiene demasiadas consonantes seguidas');
+                    isNombreValid = false;
+                    updateSubmitButton();
+                    return;
+                }
+            }
+
+            if (/(.{2,})(?:\1){2,}/.test(nombreSinEspacios)) {
+                showError(nombreInput, errorElement, errorText, 'El nombre contiene patrones repetitivos no naturales');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const secuenciasComunes = [
+                '123', '234', '345', '456', '567', '678', '789',
+                'abc', 'bcd', 'cde', 'def', 'efg', 'fgh', 'ghi', 'hij', 'ijk', 'jkl', 'klm', 'lmn', 'mno', 'nop', 'opq', 'pqr', 'qrs', 'rst', 'stu', 'tuv', 'uvw', 'vwx', 'wxy', 'xyz'
+            ];
+            if (secuenciasComunes.some(seq => nombreSinEspacios.includes(seq))) {
+                showError(nombreInput, errorElement, errorText, 'El nombre contiene secuencias numéricas o alfabéticas');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            apiStatus.style.display = 'block';
+            apiStatus.innerHTML = '<small class="api-loading"><i class="fas fa-sync-alt fa-spin"></i> Verificando nombre...</small>';
+            
+            apiTimeout = setTimeout(async () => {
+                try {
+                    const firstName = words[0];
+                    const response = await fetch(`https://api.genderize.io/?name=${encodeURIComponent(firstName)}`);
+                    
+                    if (!response.ok) throw new Error('API no disponible');
+                    
+                    const data = await response.json();
+
+                    if (data.count === 0) {
+                        apiStatus.innerHTML = '<small class="api-warning"><i class="fas fa-exclamation-triangle"></i> Nombre poco común, verifica que sea correcto</small>';
+                        showValid(nombreInput, validElement);
+                        isNombreValid = true;
+                        updateSubmitButton();
+                        return;
+                    }
+
+                    apiStatus.innerHTML = '<small class="api-success"><i class="fas fa-check-circle"></i> Nombre verificado</small>';
+                    showValid(nombreInput, validElement);
+                    isNombreValid = true;
+                    updateSubmitButton();
+                    
+                } catch (error) {
+                    console.warn('Validación API omitida:', error.message);
+                    apiStatus.innerHTML = '<small class="api-warning"><i class="fas fa-info-circle"></i> Validado localmente (API no disponible)</small>';
+                    showValid(nombreInput, validElement);
+                    isNombreValid = true;
+                    updateSubmitButton();
+                }
+            }, 800);
+        }
+
+        function validateEmail() {
+            const emailInput = document.getElementById('email');
+            const errorElement = document.getElementById('emailError');
+            const errorText = document.getElementById('emailErrorText');
+            const validElement = document.getElementById('emailValid');
+            const value = emailInput.value.trim();
+
+            emailInput.classList.remove('is-valid', 'is-invalid');
+            errorElement.style.display = 'none';
+            validElement.style.display = 'none';
+
+            if (value === '') {
+                showError(emailInput, errorElement, errorText, 'El email es obligatorio');
+                isEmailValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (!value.endsWith('@gmail.com')) {
+                showError(emailInput, errorElement, errorText, 'Solo se aceptan cuentas de Gmail (@gmail.com)');
+                isEmailValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const localPart = value.split('@')[0];
+            const localPartLower = localPart.toLowerCase();
+
+            if (localPart.length < 3) {
+                showError(emailInput, errorElement, errorText, 'El email debe tener al menos 3 caracteres antes del @');
+                isEmailValid = false;
+                updateSubmitButton();
+                return;
+            }
+            if (localPart.length > 30) {
+                showError(emailInput, errorElement, errorText, 'El email debe tener máximo 30 caracteres antes del @');
+                isEmailValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (localPart.includes('..')) {
+                showError(emailInput, errorElement, errorText, 'No se permiten dos puntos seguidos');
+                isEmailValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const charCount = {};
+            for (let char of localPartLower) {
+                if (char !== '.') {
+                    charCount[char] = (charCount[char] || 0) + 1;
+                    if (charCount[char] > 3) {
+                        showError(emailInput, errorElement, errorText, 'No se permite el mismo carácter más de 3 veces');
+                        isEmailValid = false;
+                        updateSubmitButton();
+                        return;
+                    }
+                }
+            }
+
+            if (!/^[a-zA-Z0-9.]+$/.test(localPart)) {
+                showError(emailInput, errorElement, errorText, 'Solo se permiten letras, números y puntos antes del @');
+                isEmailValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (localPart.startsWith('.') || localPart.endsWith('.')) {
+                showError(emailInput, errorElement, errorText, 'El email no puede empezar o terminar con punto');
+                isEmailValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (/(.)\1{2,}/.test(localPartLower)) {
+                showError(emailInput, errorElement, errorText, 'El email contiene caracteres repetidos de forma inusual');
+                isEmailValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const secuenciasTeclado = [
+                'qwerty', 'asdfgh', 'zxcvbn', 'poiuyt', 'lkjhgf', 'mnbvcx',
+                'qazwsx', 'edcrfv', 'tgbnhy', 'yhnujm', 'ikmloj', 'plmokn'
+            ];
+            if (secuenciasTeclado.some(seq => localPartLower.includes(seq))) {
+                showError(emailInput, errorElement, errorText, 'El email contiene secuencias de teclado no válidas');
+                isEmailValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (/(.{2,})(?:\1){2,}/.test(localPartLower)) {
+                showError(emailInput, errorElement, errorText, 'El email contiene patrones repetitivos no naturales');
+                isEmailValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            showValid(emailInput, validElement);
+            isEmailValid = true;
+            updateSubmitButton();
+        }
+
+        function validatePassword() {
+            const passwordInput = document.getElementById('password');
+            const errorElement = document.getElementById('passwordError');
+            const errorText = document.getElementById('passwordErrorText');
+            const validElement = document.getElementById('passwordValid');
+            const value = passwordInput.value;
+
+            passwordInput.classList.remove('is-valid', 'is-invalid');
+            errorElement.style.display = 'none';
+            validElement.style.display = 'none';
+
+            updatePasswordRequirements(value);
+
+            if (value === '') {
+                showError(passwordInput, errorElement, errorText, 'La contraseña es obligatoria');
+                updatePasswordStrength(0);
+                isPasswordValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (value.length < 8) {
+                showError(passwordInput, errorElement, errorText, `La contraseña debe tener al menos 8 caracteres (actual: ${value.length})`);
+                updatePasswordStrength(value.length / 8 * 25);
+                isPasswordValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (value.length > 30) {
+                showError(passwordInput, errorElement, errorText, `La contraseña debe tener máximo 30 caracteres (actual: ${value.length})`);
+                updatePasswordStrength(100);
+                isPasswordValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const charCount = {};
+            let hasRepeatedChar = false;
+            for (let char of value) {
+                charCount[char] = (charCount[char] || 0) + 1;
+                if (charCount[char] > 3) {
+                    hasRepeatedChar = true;
+                    break;
+                }
+            }
+            if (hasRepeatedChar) {
+                showError(passwordInput, errorElement, errorText, 'No se permite el mismo carácter más de 3 veces');
+                updatePasswordStrength(50);
+                isPasswordValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const hasLowercase = /[a-z]/.test(value);
+            const hasUppercase = /[A-Z]/.test(value);
+            const hasNumber = /[0-9]/.test(value);
+            const hasSpecial = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>\/?]/.test(value);
+
+            if (!hasLowercase || !hasUppercase || !hasNumber || !hasSpecial) {
+                const missing = [];
+                if (!hasLowercase) missing.push('minúscula');
+                if (!hasUppercase) missing.push('mayúscula');
+                if (!hasNumber) missing.push('número');
+                if (!hasSpecial) missing.push('símbolo');
+                
+                showError(passwordInput, errorElement, errorText, `Falta: ${missing.join(', ')}`);
+                updatePasswordStrength(60);
+                isPasswordValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            let strength = calculatePasswordStrength(value);
+            updatePasswordStrength(strength.score);
+
+            showValid(passwordInput, validElement);
+            isPasswordValid = true;
+            validateConfirmPassword();
+            updateSubmitButton();
+        }
+
+        function validateConfirmPassword() {
+            const passwordInput = document.getElementById('password');
+            const confirmInput = document.getElementById('confirmPassword');
+            const errorElement = document.getElementById('confirmPasswordError');
+            const errorText = document.getElementById('confirmPasswordErrorText');
+
+            confirmInput.classList.remove('is-valid', 'is-invalid');
+            errorElement.style.display = 'none';
+
+            if (confirmInput.value === '') {
+                showError(confirmInput, errorElement, errorText, 'Debes confirmar la contraseña');
+                isConfirmValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (confirmInput.value !== passwordInput.value) {
+                showError(confirmInput, errorElement, errorText, 'Las contraseñas no coinciden');
+                isConfirmValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            confirmInput.classList.add('is-valid');
+            isConfirmValid = true;
+            updateSubmitButton();
+        }
+
+        function updatePasswordRequirements(password) {
+            const requirements = {
+                length: password.length >= 8,
+                lowercase: /[a-z]/.test(password),
+                uppercase: /[A-Z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>\/?]/.test(password)
+            };
+
+            document.getElementById('reqLength').className = `requirement-item ${requirements.length ? 'requirement-valid' : 'requirement-invalid'}`;
+            document.getElementById('reqLowercase').className = `requirement-item ${requirements.lowercase ? 'requirement-valid' : 'requirement-invalid'}`;
+            document.getElementById('reqUppercase').className = `requirement-item ${requirements.uppercase ? 'requirement-valid' : 'requirement-invalid'}`;
+            document.getElementById('reqNumber').className = `requirement-item ${requirements.number ? 'requirement-valid' : 'requirement-invalid'}`;
+            document.getElementById('reqSpecial').className = `requirement-item ${requirements.special ? 'requirement-valid' : 'requirement-invalid'}`;
+
+            const icons = document.querySelectorAll('.requirement-item i');
+            icons.forEach(icon => {
+                if (icon.parentElement.classList.contains('requirement-valid')) {
+                    icon.className = 'fas fa-check-circle requirement-valid';
+                } else {
+                    icon.className = 'fas fa-circle requirement-invalid';
+                }
+            });
+        }
+
+        function calculatePasswordStrength(password) {
+            let score = 0;
+            let messages = [];
+
+            if (password.length >= 12) score += 30;
+            else if (password.length >= 8) score += 20;
+
+            if (/[a-z]/.test(password)) score += 10;
+            if (/[A-Z]/.test(password)) score += 10;
+            if (/[0-9]/.test(password)) score += 10;
+            if (/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>\/?]/.test(password)) score += 15;
+
+            if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 10;
+            if (/[0-9]/.test(password) && /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>\/?]/.test(password)) score += 10;
+
+            if (/(.)\1{2,}/.test(password)) score -= 15;
+            if (/123|abc|qwerty|password|admin/i.test(password)) score -= 25;
+
+            if (score >= 80) { messages.push('Contraseña fuerte'); }
+            else if (score >= 60) { messages.push('Contraseña buena'); }
+            else if (score >= 40) { messages.push('Contraseña aceptable'); }
+            else { messages.push('Contraseña débil'); }
+
+            return { score: Math.max(0, Math.min(100, score)), message: messages.join('. ') };
+        }
+
+        function updatePasswordStrength(score) {
+            const strengthBar = document.getElementById('passwordStrength');
+            const strengthText = document.getElementById('strengthText');
+            
+            strengthBar.className = 'password-strength';
+            strengthText.className = '';
+
+            if (score <= 25) {
+                strengthBar.classList.add('strength-weak');
+                strengthText.textContent = 'Débil';
+                strengthText.className = 'text-danger';
+            } else if (score <= 50) {
+                strengthBar.classList.add('strength-fair');
+                strengthText.textContent = 'Aceptable';
+                strengthText.className = 'text-warning';
+            } else if (score <= 75) {
+                strengthBar.classList.add('strength-good');
+                strengthText.textContent = 'Buena';
+                strengthText.className = 'text-info';
+            } else {
+                strengthBar.classList.add('strength-strong');
+                strengthText.textContent = 'Fuerte';
+                strengthText.className = 'text-success';
+            }
+        }
+
+        function showError(input, errorElement, errorTextElement, message) {
+            input.classList.add('is-invalid');
+            input.classList.remove('is-valid');
+            if (errorTextElement) errorTextElement.textContent = message;
+            if (errorElement) errorElement.style.display = 'block';
+        }
+
+        function showValid(input, validElement) {
+            input.classList.add('is-valid');
+            input.classList.remove('is-invalid');
+            if (validElement) validElement.style.display = 'block';
+        }
+
+        function updateSubmitButton() {
+            const submitButton = document.getElementById('submitButton');
+            if (isNombreValid && isEmailValid && isPasswordValid && isConfirmValid) {
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-user-plus me-2"></i> Crear Cuenta';
+            } else {
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<i class="fas fa-user-plus me-2"></i> Crear Cuenta';
+            }
+        }
+
+        function validateNombreSync() {
+            const nombreInput = document.getElementById('nombre');
+            const errorElement = document.getElementById('nombreError');
+            const errorText = document.getElementById('nombreErrorText');
+            const validElement = document.getElementById('nombreValid');
+            const apiStatus = document.getElementById('apiStatus');
+            const value = nombreInput.value.trim();
+
+            nombreInput.classList.remove('is-valid', 'is-invalid');
+            errorElement.style.display = 'none';
+            validElement.style.display = 'none';
+            apiStatus.style.display = 'none';
+
+            if (value === '') {
+                showError(nombreInput, errorElement, errorText, 'El nombre es obligatorio');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(value)) {
+                showError(nombreInput, errorElement, errorText, 'Solo se permiten letras y espacios. No se permiten números ni símbolos.');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (value.length < 2 || value.length > 50) {
+                showError(nombreInput, errorElement, errorText, 'El nombre debe tener entre 2 y 50 caracteres');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            if (/\s{3,}/.test(value)) {
+                showError(nombreInput, errorElement, errorText, 'No se permiten más de dos espacios seguidos');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const words = value.split(/\s+/).filter(word => word.length > 0);
+
+            if (words.length < 1 || words.length > 2) {
+                showError(nombreInput, errorElement, errorText, 'Debe contener 1 o 2 palabras (nombre obligatorio y apellido opcional)');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            for (let word of words) {
+                if (word.length < 3) {
+                    showError(nombreInput, errorElement, errorText, `Cada palabra debe tener al menos 3 caracteres. "${word}" tiene ${word.length}.`);
+                    isNombreValid = false;
+                    updateSubmitButton();
+                    return;
+                }
+                if (word.length > 20) {
+                    showError(nombreInput, errorElement, errorText, `Cada palabra debe tener máximo 20 caracteres. "${word}" tiene ${word.length}.`);
+                    isNombreValid = false;
+                    updateSubmitButton();
+                    return;
+                }
+            }
+
+            const nombreValue = value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const nombreSinEspacios = nombreValue.replace(/\s/g, '');
+
+            if (/(.)\1{2,}/.test(nombreValue)) {
+                showError(nombreInput, errorElement, errorText, 'El nombre contiene caracteres repetidos de forma inusual');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const secuenciasTeclado2 = [
+                'qwerty', 'asdfgh', 'zxcvbn', 'poiuyt', 'lkjhgf', 'mnbvcx',
+                'qazwsx', 'edcrfv', 'tgbnhy', 'yhnujm', 'ikmloj', 'plmokn',
+                '123456', 'abcdef', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm'
+            ];
+            if (secuenciasTeclado2.some(seq => nombreSinEspacios.includes(seq))) {
+                showError(nombreInput, errorElement, errorText, 'El nombre contiene secuencias de teclado no válidas');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const paresRepetidos = nombreSinEspacios.match(/([a-z]{2})\1+/g);
+            if (paresRepetidos && paresRepetidos.some(par => par.length >= 4)) {
+                showError(nombreInput, errorElement, errorText, 'El nombre contiene patrones de letras repetidos (ej: abab)');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const vocales2 = (nombreSinEspacios.match(/[aeiou]/g) || []).length;
+            const longitudTotal = nombreSinEspacios.length;
+            
+            if (longitudTotal > 0) {
+                const proporcionVocales = vocales2 / longitudTotal;
+                if (proporcionVocales < 0.25 || proporcionVocales > 0.6) {
+                    showError(nombreInput, errorElement, errorText, 'El nombre tiene una proporción inusual de vocales y consonantes');
+                    isNombreValid = false;
+                    updateSubmitButton();
+                    return;
+                }
+
+                if (/[bcdfghjklmnpqrstvwxyz]{4,}/.test(nombreSinEspacios)) {
+                    showError(nombreInput, errorElement, errorText, 'El nombre contiene demasiadas consonantes seguidas');
+                    isNombreValid = false;
+                    updateSubmitButton();
+                    return;
+                }
+            }
+
+            if (/(.{2,})(?:\1){2,}/.test(nombreSinEspacios)) {
+                showError(nombreInput, errorElement, errorText, 'El nombre contiene patrones repetitivos no naturales');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            const secuenciasComunes2 = [
+                '123', '234', '345', '456', '567', '678', '789',
+                'abc', 'bcd', 'cde', 'def', 'efg', 'fgh', 'ghi', 'hij', 'ijk', 'jkl', 'klm', 'lmn', 'mno', 'nop', 'opq', 'pqr', 'qrs', 'rst', 'stu', 'tuv', 'uvw', 'vwx', 'wxy', 'xyz'
+            ];
+            if (secuenciasComunes2.some(seq => nombreSinEspacios.includes(seq))) {
+                showError(nombreInput, errorElement, errorText, 'El nombre contiene secuencias numéricas o alfabéticas');
+                isNombreValid = false;
+                updateSubmitButton();
+                return;
+            }
+
+            showValid(nombreInput, document.getElementById('nombreValid'));
+            isNombreValid = true;
+            updateSubmitButton();
+        }
+
+        document.getElementById('registerForm').addEventListener('submit', function(e) {
+            if (apiTimeout) {
+                clearTimeout(apiTimeout);
+                apiTimeout = null;
+            }
+            validateNombreSync();
+            validateEmail();
+            validatePassword();
+            validateConfirmPassword();
+            if (!isNombreValid || !isEmailValid || !isPasswordValid || !isConfirmValid) {
+                e.preventDefault();
+                const firstError = document.querySelector('.is-invalid');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    firstError.focus();
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            validateNombre();
+            validateEmail();
+            validatePassword();
+            validateConfirmPassword();
+        });
+    </script>
 </body>
 </html>

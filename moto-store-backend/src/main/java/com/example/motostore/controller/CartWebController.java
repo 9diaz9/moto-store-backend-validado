@@ -111,7 +111,14 @@ public class CartWebController {
 
         // Llamamos a la lógica REAL de ventas
         // El tercer parámetro es el tipo de entrega, por ahora "LOCAL"
-        Sale sale = saleService.checkout(customerId, paymentMethod, "LOCAL");
+        Sale sale;
+        try {
+            sale = saleService.checkout(customerId, paymentMethod, "LOCAL");
+        } catch (RuntimeException ex) {
+            // Mostrar mensaje amigable al usuario en caso de error (p.ej. falta de stock, fallo en generación de factura)
+            redirectAttributes.addFlashAttribute("error", ex.getMessage());
+            return "redirect:/cart";
+        }
 
         // En SaleService.checkout normalmente se:
         //  - crea la entidad Sale

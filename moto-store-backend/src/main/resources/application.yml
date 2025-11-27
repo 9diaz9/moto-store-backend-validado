@@ -20,13 +20,17 @@ spring:
     host: smtp.gmail.com
     port: 587
     username: bndfnmn@gmail.com        # <-- tu correo Gmail
-    password: hceflkukzpzukckh         # <-- tu contraseña de aplicación
+    password: hceflkukzpzukckh 
+    protocol: smtp        # <-- tu contraseña de aplicación
     properties:
       mail:
         smtp:
           auth: true
           starttls:
             enable: true
+            connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
           ssl:
             trust: smtp.gmail.com
 

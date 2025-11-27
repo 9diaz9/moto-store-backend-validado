@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/moto_store
-    username: postgres
-    password: 1234
-    driver-class-name: org.postgresql.Driver
+    url: postgresql://moto_store_user:T213McVCcnRyUE5J5u9rJh0vafBPQBmy@dpg-d4jl1egbdp1s73819sn0-a/moto_store
+    username: moto_store_user
+    password: T213McVCcnRyUE5J5u9rJh0vafBPQBmy
+    #driver-class-name: org.postgresql.Driver
 
   jpa:
     hibernate:
@@ -31,7 +31,7 @@ spring:
             trust: smtp.gmail.com
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 logging:
   level:

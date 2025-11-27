@@ -17,7 +17,7 @@
     </parent>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>21s</java.version>
     </properties>
 
     <dependencies>
@@ -85,6 +85,8 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
+
+        <!-- (Removed SendGrid) -->
 
     </dependencies>
 
